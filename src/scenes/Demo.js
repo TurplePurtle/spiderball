@@ -2,7 +2,7 @@
 import assign from "lodash/object/assign";
 import Loop from "../lib/Loop";
 import { ecs } from "../lib/ecs";
-import GamepadManager from "../lib/GamepadManager";
+import { mappingForGamepad } from "../lib/gamepad-mapper";
 // components
 import Position from "../components/Position";
 import Velocity from "../components/Velocity";
@@ -29,8 +29,6 @@ export default function Demo(context, input) {
   this.input = input;
   this.loop = null;
   this.player = null;
-  this.gamepadManager = new GamepadManager;
-  this.gamepadManagerInterval = 0;
 
   this.entityService = new ecs.EntityService();
   this.entityService.registerComponent(Position);
@@ -111,9 +109,9 @@ Demo.prototype.tick = function(dt) {
   const updateSystems = this.updateSystems;
   const renderSystems = this.renderSystems;
 
-  const gamepad = this.gamepadManager.gamepads[0];
+  const gamepad = navigator.getGamepads && navigator.getGamepads()[0];
   if (gamepad) {
-    this.input.updateFromGamepad(gamepad);
+    this.input.updateFromGamepad(gamepad, mappingForGamepad(gamepad));
   }
 
   for (let i = 0, len = updateSystems.length; i < len; i++) {
@@ -129,13 +127,11 @@ Demo.prototype.tick = function(dt) {
 Demo.prototype.run = function() {
   this.load();
   this.loop = Loop.start(this.tick, { useRAF: true }, this);
-  this.gamepadManagerInterval = setInterval(() => { this.gamepadManager.updateGamepads(); }, 2000);
   return this;
 };
 
 Demo.prototype.stop = function() {
   this.loop.stop();
   this.loop = null;
-  clearInterval(this.gamepadManagerInterval);
   return this;
 };

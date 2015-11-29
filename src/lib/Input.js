@@ -76,14 +76,17 @@ Input.prototype.updateAxisFromKey = function(name) {
     /* otherwise */ axisFromKey.defaultValue;
 };
 
-Input.prototype.updateFromGamepad = function(gamepad) {
+Input.prototype.updateFromGamepad = function(gamepad, mapping) {
   // update buttons
   const buttons = this.gamepadConfig.buttons;
   if (buttons) {
     for (let i = 0, len = buttons.length; i < len; i+=2) {
       const name = buttons[i+1];
-      const pressed = gamepad.isPressed(buttons[i]);
-      if (pressed && !this.nameToValue[name]) this.justPressedInputs.push(name);
+      const btnIndex = mapping ? mapping.buttons[buttons[i]] : buttons[i];
+      const pressed = gamepad.buttons[btnIndex].pressed;
+      if (pressed && !this.nameToValue[name]) {
+        this.justPressedInputs.push(name);
+      }
       this.nameToValue[name] = pressed;
     }
   }
@@ -92,7 +95,8 @@ Input.prototype.updateFromGamepad = function(gamepad) {
   const axes = this.gamepadConfig.axes;
   if (axes) {
     for (let i = 0, len = axes.length; i < len; i+=2) {
-      this.axisToValue[axes[i+1]] = gamepad.getAxis(axes[i]);
+      const axisIndex = mapping ? mapping.axes[axes[i]] : axes[i];
+      this.axisToValue[axes[i+1]] = gamepad.axes[axisIndex];
     }
   }
 };
