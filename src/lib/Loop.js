@@ -10,7 +10,7 @@ export default function Loop(fn, opts, thisArg) {
   }
 }
 
-Loop.prototype.run = function() {
+Loop.prototype.start = function() {
   this.running = true;
 
   if (this.opts.useRAF) {
@@ -41,13 +41,11 @@ Loop.prototype.run = function() {
   return this;
 };
 
-Loop.prototype.start = Loop.prototype.run;
-
 Loop.prototype.stop = function() {
   this.running = false;
   return this;
 };
 
 Loop.start = function(dt, opts, thisArg) {
-  return new Loop(dt, opts, thisArg).run();
+  return new Loop(dt, opts, thisArg).start();
 };

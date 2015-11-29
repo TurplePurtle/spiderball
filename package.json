@@ -8,6 +8,7 @@
     "bundle-dev": "watchify src/index.js -t babelify --debug -o static/bundle.js",
     "serve": "cd static && ~/util/serve",
     "dev": "npm run bundle-dev & npm run serve",
+    "publish": "npm run bundle && cd static && git add . && git commit && git push",
     "lint": "eslint src"
   },
   "author": "TurplePurtle",

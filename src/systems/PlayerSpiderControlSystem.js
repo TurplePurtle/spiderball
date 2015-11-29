@@ -22,9 +22,13 @@ export default class PlayerSpiderControlSystem {
     const web = player.getComponent(Web);
     const grounded = player.getComponent(PlatformStander).grounded;
 
+    const axisX = input.getAxis("x");
+    const axisY = input.getAxis("y");
+    const axisThresh = 0.1;
+
     if (spider.webbing && web.hit) {
       // swinging
-      if (grounded || input.justPressed("up")) {
+      if (grounded || axisY < -axisThresh) {
         // release swing
         spider.webbing = false;
       } else {
@@ -46,21 +50,31 @@ export default class PlayerSpiderControlSystem {
       }
     } else {
       // not swinging
-      if (input.isPressed("left")) {
-        vel.x = -150;
+
+      const accel = grounded ? 2000 : 1000;
+      const drag = grounded ? 12 : 2;
+      const runSpeed = axisX * 150;
+
+      if (grounded && axisY < -axisThresh) {
+        vel.y = -200;
+      }
+
+      if (axisX < -axisThresh) {
+        if (vel.x > runSpeed) {
+          vel.x = Math.max(vel.x - accel * dt, runSpeed);
+        }
         spider.facing = -1;
-      } else if (input.isPressed("right")) {
-        vel.x = 150;
+      } else if (axisX > axisThresh) {
+        if (vel.x < runSpeed) {
+          vel.x = Math.min(vel.x + accel * dt, runSpeed);
+        }
         spider.facing = 1;
       } else {
-        vel.x *= 0.8;
-      }
-      if (grounded && input.justPressed("up")) {
-        vel.y = -200;
+        vel.x *= Math.max(1 - drag * dt, 0);
       }
     }
 
-    if (!spider.webbing && input.justPressed("jump")) {
+    if (!spider.webbing && input.justPressed("action")) {
       // shoot web
       spider.webbing = true;
       web.t = 0;

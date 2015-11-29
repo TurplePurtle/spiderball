@@ -2,6 +2,7 @@
 import assign from "lodash/object/assign";
 import Loop from "../lib/Loop";
 import { ecs } from "../lib/ecs";
+import GamepadManager from "../lib/GamepadManager";
 // components
 import Position from "../components/Position";
 import Velocity from "../components/Velocity";
@@ -28,6 +29,8 @@ export default function Demo(context, input) {
   this.input = input;
   this.loop = null;
   this.player = null;
+  this.gamepadManager = new GamepadManager;
+  this.gamepadManagerInterval = 0;
 
   this.entityService = new ecs.EntityService();
   this.entityService.registerComponent(Position);
@@ -58,8 +61,8 @@ export default function Demo(context, input) {
 
 Demo.prototype.load = function() {
   const player = this.entityService.createEntity();
-  player.setComponent(Position, assign(new Position, { x: 50, y: 300 }));
-  player.setComponent(Velocity, new Velocity);
+  player.setComponent(Position, assign(new Position, { x: 150, y: 250 }));
+  player.setComponent(Velocity, assign(new Velocity, { x: 1000 }));
   player.setComponent(Gravity, new Gravity(300));
   player.setComponent(CollisionBox, assign(new CollisionBox, { x: -10, y: -10, w: 20, h: 20 }));
   player.setComponent(RenderBox, assign(new RenderBox, { x: -10, y: -10, w: 20, h: 20 }));
@@ -108,6 +111,11 @@ Demo.prototype.tick = function(dt) {
   const updateSystems = this.updateSystems;
   const renderSystems = this.renderSystems;
 
+  const gamepad = this.gamepadManager.gamepads[0];
+  if (gamepad) {
+    this.input.updateFromGamepad(gamepad);
+  }
+
   for (let i = 0, len = updateSystems.length; i < len; i++) {
     updateSystems[i].run(dt);
   }
@@ -121,11 +129,13 @@ Demo.prototype.tick = function(dt) {
 Demo.prototype.run = function() {
   this.load();
   this.loop = Loop.start(this.tick, { useRAF: true }, this);
+  this.gamepadManagerInterval = setInterval(() => { this.gamepadManager.updateGamepads(); }, 2000);
   return this;
 };
 
 Demo.prototype.stop = function() {
   this.loop.stop();
   this.loop = null;
+  clearInterval(this.gamepadManagerInterval);
   return this;
 };

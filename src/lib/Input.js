@@ -23,6 +23,7 @@ export default function Input(config) {
   this.axisToValue = {};
   this.nameToAxisFromKeys = {};
   this.justPressedInputs = [];
+  this.gamepadConfig = config.gamepad;
 
   if (config.keys) {
     const keyToName = config.keys;
@@ -73,6 +74,27 @@ Input.prototype.updateAxisFromKey = function(name) {
     this.nameToValue[names[0]] ? values[0] :
     this.nameToValue[names[1]] ? values[1] :
     /* otherwise */ axisFromKey.defaultValue;
+};
+
+Input.prototype.updateFromGamepad = function(gamepad) {
+  // update buttons
+  const buttons = this.gamepadConfig.buttons;
+  if (buttons) {
+    for (let i = 0, len = buttons.length; i < len; i+=2) {
+      const name = buttons[i+1];
+      const pressed = gamepad.isPressed(buttons[i]);
+      if (pressed && !this.nameToValue[name]) this.justPressedInputs.push(name);
+      this.nameToValue[name] = pressed;
+    }
+  }
+
+  // update axes
+  const axes = this.gamepadConfig.axes;
+  if (axes) {
+    for (let i = 0, len = axes.length; i < len; i+=2) {
+      this.axisToValue[axes[i+1]] = gamepad.getAxis(axes[i]);
+    }
+  }
 };
 
 Input.prototype.afterUpdate = function() {
