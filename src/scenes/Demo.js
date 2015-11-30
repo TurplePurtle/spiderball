@@ -27,7 +27,8 @@ import SpiderWebSystem from "../systems/SpiderWebSystem";
 export default function Demo(context, input) {
   this.context = context;
   this.input = input;
-  this.loop = null;
+  this.loop = new Loop(this.tick, { useRAF: true }, this);
+  this.running = false;
   this.player = null;
 
   this.entityService = new ecs.EntityService();
@@ -105,7 +106,8 @@ Demo.prototype.load = function() {
   return this;
 };
 
-Demo.prototype.tick = function(dt) {
+Demo.prototype.tick = function(dtRaw) {
+  const dt = Math.min(dtRaw, 0.04); // cap dt at 1 / 25
   const updateSystems = this.updateSystems;
   const renderSystems = this.renderSystems;
 
@@ -124,14 +126,22 @@ Demo.prototype.tick = function(dt) {
   }
 };
 
-Demo.prototype.run = function() {
-  this.load();
-  this.loop = Loop.start(this.tick, { useRAF: true }, this);
+Demo.prototype.start = function() {
+  if (this.running) return;
+  this.running = true;
+  this.loop.start();
   return this;
 };
 
 Demo.prototype.stop = function() {
+  if (!this.running) return;
+  this.running = false;
   this.loop.stop();
+  return this;
+};
+
+Demo.prototype.unload = function() {
+  this.stop();
   this.loop = null;
   return this;
 };

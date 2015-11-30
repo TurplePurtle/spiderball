@@ -11,6 +11,7 @@ export default function Loop(fn, opts, thisArg) {
 }
 
 Loop.prototype.start = function() {
+  if (this.running) return;
   this.running = true;
 
   if (this.opts.useRAF) {
