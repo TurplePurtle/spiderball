@@ -23,12 +23,11 @@ export default class PlayerSpiderControlSystem {
     const grounded = player.getComponent(PlatformStander).grounded;
 
     const axisX = input.getAxis("x");
-    const axisY = input.getAxis("y");
     const axisThresh = 0.1;
 
     if (spider.webbing && web.hit) {
       // swinging
-      if (grounded || axisY < -axisThresh) {
+      if (grounded || input.justPressed("jump") || input.justPressed("action")) {
         // release swing
         spider.webbing = false;
       } else {
@@ -55,7 +54,7 @@ export default class PlayerSpiderControlSystem {
       const drag = grounded ? 12 : 2;
       const runSpeed = axisX * 150;
 
-      if (grounded && axisY < -axisThresh) {
+      if (grounded && input.justPressed("jump")) {
         vel.y = -200;
       }
 
@@ -72,17 +71,17 @@ export default class PlayerSpiderControlSystem {
       } else {
         vel.x *= Math.max(1 - drag * dt, 0);
       }
-    }
 
-    if (!spider.webbing && input.justPressed("action")) {
-      // shoot web
-      spider.webbing = true;
-      web.t = 0;
-      web.x = pos.x;
-      web.y = pos.y;
-      web.dx = spider.facing * Math.sqrt(0.5);
-      web.dy = -Math.sqrt(0.5);
-      web.hit = false;
+      if (!spider.webbing && input.justPressed("action")) {
+        // shoot web
+        spider.webbing = true;
+        web.t = 0;
+        web.x = pos.x;
+        web.y = pos.y;
+        web.dx = spider.facing * Math.sqrt(0.5);
+        web.dy = -Math.sqrt(0.5);
+        web.hit = false;
+      }
     }
 
     if (pos.y > fallDeath.y) {
