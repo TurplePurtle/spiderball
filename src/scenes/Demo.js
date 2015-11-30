@@ -23,27 +23,28 @@ import ClearScreenSystem from "../systems/ClearScreenSystem";
 import RenderBoxSystem from "../systems/RenderBoxSystem";
 import PlatformSystem from "../systems/PlatformSystem";
 import SpiderWebSystem from "../systems/SpiderWebSystem";
+import SpiderWebRenderSystem from "../systems/SpiderWebRenderSystem";
 
 export default function Demo(canvasContext, input) {
   this.canvasContext = canvasContext;
   this.input = input;
   this.loop = new Loop(this.tick, { useRAF: true }, this);
   this.running = false;
+  this.entityService = null;
   this.player = null;
   this.dt = 0;
-
-  this.entityService = null;
 
   this.updateSystems = [
     new PlayerSpiderControlSystem,
     new GravitySystem,
+    new SpiderWebSystem,
     new VelocitySystem,
     new PlatformSystem,
   ];
 
   this.renderSystems = [
     new ClearScreenSystem,
-    new SpiderWebSystem,
+    new SpiderWebRenderSystem,
     new RenderBoxSystem,
   ];
 }
@@ -116,6 +117,7 @@ Demo.prototype.tick = function(dt) {
 
   if (this.player.getComponent(FallDeath).triggered) {
     this.load();
+    return;
   }
 
   const gamepad = navigator.getGamepads && navigator.getGamepads()[0];

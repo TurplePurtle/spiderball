@@ -6,7 +6,6 @@ export default class CollisionBoxDebugSystem {
   }
 
   run(context) {
-    const dt = context.dt
     const ctx = context.canvasContext;
     const prevStyle = ctx.strokeStyle;
     ctx.strokeStyle = "#f00";

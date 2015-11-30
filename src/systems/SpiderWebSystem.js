@@ -1,4 +1,5 @@
 import Position from "../components/Position";
+import Velocity from "../components/Velocity";
 import Spider from "../components/Spider";
 import Web from "../components/Web";
 import Platform from "../components/Platform";
@@ -16,9 +17,31 @@ export default class SpiderWebSystem {
       const pos = entity.getComponent(Position);
       if (spider.webbing) {
         const web = entity.getComponent(Web);
+        const vel = entity.getComponent(Velocity);
 
         if (web.hit) {
-          // could be effects or whatever
+          // swing physics
+
+          // normalized web vector
+          const dx = pos.x - web.x;
+          const dy = pos.y - web.y;
+          const length = web.hitLength;
+          // swing direction
+          const ux = -dy / length;
+          const uy = dx / length;
+          // calculate speed in direction of swing
+          const speed = ux * vel.x + uy * vel.y;
+
+          // constrain web length
+          const delta = speed * dx;
+          const freeX = dx + ux * delta;
+          const freeY = dy + uy * delta;
+          const ratio = length / Math.sqrt(freeX*freeX + freeY*freeY);
+          const newX = web.x + freeX * ratio;
+          const newY = web.y + freeY * ratio;
+
+          vel.x = (newX - pos.x) / dt;
+          vel.y = (newY - pos.y) / dt;
         } else if (web.t > web.ttl) {
           spider.webbing = false;
         } else {
@@ -28,26 +51,22 @@ export default class SpiderWebSystem {
 
           const platforms = context.entityService.getComponentMap(Platform);
           for (let p of platforms) {
-            const pos = p.getComponent(Position);
+            const pPos = p.getComponent(Position);
             const box = p.getComponent(CollisionBox);
             if (
-              web.x > pos.x + box.x &&
-              web.x < pos.x + box.x + box.w &&
-              web.y > pos.y + box.y &&
-              web.y < pos.y + box.y + box.h
+              web.x > pPos.x + box.x &&
+              web.x < pPos.x + box.x + box.w &&
+              web.y > pPos.y + box.y &&
+              web.y < pPos.y + box.y + box.h
             ) {
+              const dx = pos.x - web.x;
+              const dy = pos.y - web.y;
+              web.hitLength = Math.sqrt(dx*dx + dy*dy);
               web.hit = true;
+              break;
             }
           }
         }
-
-        const ctx = context.canvasContext;
-        ctx.strokeStyle = "#fff";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-        ctx.lineTo(web.x, web.y);
-        ctx.stroke();
       }
     }
   }

@@ -29,28 +29,12 @@ export default class PlayerSpiderControlSystem {
       if (grounded || input.justPressed("jump") || input.justPressed("action")) {
         // release swing
         spider.webbing = false;
-      } else {
-        // swing physics
-        // normalized web vector
-        let dx = web.x - pos.x;
-        let dy = web.y - pos.y;
-        let length = Math.sqrt(dx*dx + dy*dy);
-        dx = dx / length;
-        dy = dy / length;
-        // swing direction
-        const ux = -dy;
-        const uy = dx;
-        // calculate speed in direction of swing
-        // (add gravity before projecting!)
-        const speed = ux * vel.x + uy * vel.y;
-        vel.x = speed * ux;
-        vel.y = speed * uy;
       }
     } else {
       // not swinging
 
       const accel = grounded ? 2000 : 1000;
-      const drag = grounded ? 12 : 2;
+      const drag = grounded ? 15 : 2;
       const runSpeed = axisX * 150;
 
       if (grounded && input.justPressed("jump")) {

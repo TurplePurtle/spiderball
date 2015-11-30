@@ -5,6 +5,7 @@ export default function Web() {
   this.dx = 0;
   this.dy = 0;
   this.hit = false;
+  this.hitLength = 0;
   this.rate = 400;
   this.ttl = 0.5;
 }
