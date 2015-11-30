@@ -24,13 +24,31 @@ import RenderBoxSystem from "../systems/RenderBoxSystem";
 import PlatformSystem from "../systems/PlatformSystem";
 import SpiderWebSystem from "../systems/SpiderWebSystem";
 
-export default function Demo(context, input) {
-  this.context = context;
+export default function Demo(canvasContext, input) {
+  this.canvasContext = canvasContext;
   this.input = input;
   this.loop = new Loop(this.tick, { useRAF: true }, this);
   this.running = false;
   this.player = null;
+  this.dt = 0;
 
+  this.entityService = null;
+
+  this.updateSystems = [
+    new PlayerSpiderControlSystem,
+    new GravitySystem,
+    new VelocitySystem,
+    new PlatformSystem,
+  ];
+
+  this.renderSystems = [
+    new ClearScreenSystem,
+    new SpiderWebSystem,
+    new RenderBoxSystem,
+  ];
+}
+
+Demo.prototype.load = function() {
   this.entityService = new ecs.EntityService();
   this.entityService.registerComponent(Position);
   this.entityService.registerComponent(Velocity);
@@ -44,21 +62,6 @@ export default function Demo(context, input) {
   this.entityService.registerComponent(Spider);
   this.entityService.registerComponent(Web);
 
-  this.updateSystems = [
-    new PlayerSpiderControlSystem(this.entityService, this.input),
-    new GravitySystem(this.entityService),
-    new VelocitySystem(this.entityService),
-    new PlatformSystem(this.entityService),
-  ];
-
-  this.renderSystems = [
-    new ClearScreenSystem(this.context),
-    new SpiderWebSystem(this.entityService, this.context),
-    new RenderBoxSystem(this.entityService, this.context),
-  ];
-}
-
-Demo.prototype.load = function() {
   const player = this.entityService.createEntity();
   player.setComponent(Position, assign(new Position, { x: 150, y: 250 }));
   player.setComponent(Velocity, assign(new Velocity, { x: 1000 }));
@@ -67,7 +70,7 @@ Demo.prototype.load = function() {
   player.setComponent(RenderBox, assign(new RenderBox, { x: -10, y: -10, w: 20, h: 20 }));
   player.setComponent(PlatformStander, new PlatformStander);
   player.setComponent(Player, new Player);
-  player.setComponent(FallDeath, new FallDeath(this.context.canvas.height));
+  player.setComponent(FallDeath, new FallDeath(this.canvasContext.canvas.height));
   player.setComponent(Spider, new Spider);
   player.setComponent(Web, new Web);
   this.player = player;
@@ -106,10 +109,14 @@ Demo.prototype.load = function() {
   return this;
 };
 
-Demo.prototype.tick = function(dtRaw) {
-  const dt = Math.min(dtRaw, 0.04); // cap dt at 1 / 25
+Demo.prototype.tick = function(dt) {
+  this.dt = Math.min(dt, 0.04); // cap dt at 1 / 25
   const updateSystems = this.updateSystems;
   const renderSystems = this.renderSystems;
+
+  if (this.player.getComponent(FallDeath).triggered) {
+    this.load();
+  }
 
   const gamepad = navigator.getGamepads && navigator.getGamepads()[0];
   if (gamepad) {
@@ -117,12 +124,12 @@ Demo.prototype.tick = function(dtRaw) {
   }
 
   for (let i = 0, len = updateSystems.length; i < len; i++) {
-    updateSystems[i].run(dt);
+    updateSystems[i].run(this);
   }
   this.input.afterUpdate();
 
   for (let i = 0, len = renderSystems.length; i < len; i++) {
-    renderSystems[i].run(dt);
+    renderSystems[i].run(this);
   }
 };
 

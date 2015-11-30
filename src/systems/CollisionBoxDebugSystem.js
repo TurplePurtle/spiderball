@@ -2,16 +2,15 @@ import Position from "../components/Position";
 import CollisionBox from "../components/CollisionBox";
 
 export default class CollisionBoxDebugSystem {
-  constructor(entityService, context) {
-    this.entityService = entityService;
-    this.context = context;
+  constructor() {
   }
 
-  run(dt) {
-    const ctx = this.context;
+  run(context) {
+    const dt = context.dt
+    const ctx = context.canvasContext;
     const prevStyle = ctx.strokeStyle;
     ctx.strokeStyle = "#f00";
-    const entities = this.entityService.getComponentMap(CollisionBox);
+    const entities = context.entityService.getComponentMap(CollisionBox);
     for (let entity of entities) {
       const pos = entity.getComponent(Position);
       const box = entity.getComponent(CollisionBox);

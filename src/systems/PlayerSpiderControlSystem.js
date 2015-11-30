@@ -7,14 +7,13 @@ import Web from "../components/Web";
 import PlatformStander from "../components/PlatformStander";
 
 export default class PlayerSpiderControlSystem {
-  constructor(entityService, input) {
-    this.entityService = entityService;
-    this.input = input;
+  constructor() {
   }
 
-  run(dt) {
-    const player = this.entityService.getComponentMap(Player).firstEntity();
-    const input = this.input;
+  run(context) {
+    const dt = context.dt;
+    const player = context.entityService.getComponentMap(Player).firstEntity();
+    const input = context.input;
     const pos = player.getComponent(Position);
     const vel = player.getComponent(Velocity);
     const fallDeath = player.getComponent(FallDeath);
@@ -86,10 +85,6 @@ export default class PlayerSpiderControlSystem {
 
     if (pos.y > fallDeath.y) {
       fallDeath.triggered = true;
-      pos.x = 50;
-      pos.y = 300;
-      vel.x = 0;
-      vel.y = 0;
       spider.webbing = false;
     }
   }

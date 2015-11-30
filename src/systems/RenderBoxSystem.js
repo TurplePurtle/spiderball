@@ -2,14 +2,12 @@ import Position from "../components/Position";
 import RenderBox from "../components/RenderBox";
 
 export default class RenderBoxSystem {
-  constructor(entityService, context) {
-    this.entityService = entityService;
-    this.context = context;
+  constructor() {
   }
 
-  run() {
-    const ctx = this.context;
-    const entities = this.entityService.getComponentMap(RenderBox);
+  run(context) {
+    const ctx = context.canvasContext;
+    const entities = context.entityService.getComponentMap(RenderBox);
     ctx.fillStyle = "#fff";
     for (let entity of entities) {
       const pos = entity.getComponent(Position);

@@ -1,10 +1,9 @@
 export default class ClearScreenSystem {
-  constructor(context) {
-    this.context = context;
+  constructor() {
   }
 
-  run() {
-    const ctx = this.context;
+  run(context) {
+    const ctx = context.canvasContext;
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   }
 }

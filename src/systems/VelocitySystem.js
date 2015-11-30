@@ -2,12 +2,12 @@ import Position from "../components/Position";
 import Velocity from "../components/Velocity";
 
 export default class VelocitySystem {
-  constructor(entityService) {
-    this.entityService = entityService;
+  constructor() {
   }
 
-  run(dt) {
-    const entities = this.entityService.getComponentMap(Velocity);
+  run(context) {
+    const dt = context.dt;
+    const entities = context.entityService.getComponentMap(Velocity);
     for (let entity of entities) {
       const pos = entity.getComponent(Position);
       const v = entity.getComponent(Velocity);

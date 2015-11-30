@@ -5,13 +5,12 @@ import Platform from "../components/Platform";
 import PlatformStander from "../components/PlatformStander";
 
 export default class PlatformSystem {
-  constructor(entityService) {
-    this.entityService = entityService;
+  constructor() {
   }
 
-  run(dt) {
-    const platformEntities = this.entityService.getComponentMap(Platform);
-    const standerEntities = this.entityService.getComponentMap(PlatformStander);
+  run(context) {
+    const platformEntities = context.entityService.getComponentMap(Platform);
+    const standerEntities = context.entityService.getComponentMap(PlatformStander);
     for (let standerEnt of standerEntities) {
       const box = standerEnt.getComponent(CollisionBox);
       const pos = standerEnt.getComponent(Position);

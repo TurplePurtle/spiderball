@@ -5,13 +5,12 @@ import Platform from "../components/Platform";
 import CollisionBox from "../components/CollisionBox";
 
 export default class SpiderWebSystem {
-  constructor(entityService, context) {
-    this.entityService = entityService;
-    this.context = context;
+  constructor() {
   }
 
-  run(dt) {
-    const entities = this.entityService.getComponentMap(Web);
+  run(context) {
+    const dt = context.dt;
+    const entities = context.entityService.getComponentMap(Web);
     for (let entity of entities) {
       const spider = entity.getComponent(Spider);
       const pos = entity.getComponent(Position);
@@ -27,7 +26,7 @@ export default class SpiderWebSystem {
           web.y += web.dy * web.rate * dt;
           web.t += dt;
 
-          const platforms = this.entityService.getComponentMap(Platform);
+          const platforms = context.entityService.getComponentMap(Platform);
           for (let p of platforms) {
             const pos = p.getComponent(Position);
             const box = p.getComponent(CollisionBox);
@@ -42,7 +41,7 @@ export default class SpiderWebSystem {
           }
         }
 
-        const ctx = this.context;
+        const ctx = context.canvasContext;
         ctx.strokeStyle = "#fff";
         ctx.lineWidth = 2;
         ctx.beginPath();
