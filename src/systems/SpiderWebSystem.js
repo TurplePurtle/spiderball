@@ -33,7 +33,7 @@ export default class SpiderWebSystem {
           const speed = ux * vel.x + uy * vel.y;
 
           // constrain web length
-          const delta = speed * dx;
+          const delta = speed * dt;
           const freeX = dx + ux * delta;
           const freeY = dy + uy * delta;
           const ratio = length / Math.sqrt(freeX*freeX + freeY*freeY);
