@@ -1,7 +1,7 @@
 // lib
 import assign from "lodash/object/assign";
 import Loop from "../lib/Loop";
-import { ecs } from "../lib/ecs";
+import { EntityService } from "../lib/ezs";
 import { mappingForGamepad } from "../lib/gamepad-mapper";
 // components
 import Position from "../components/Position";
@@ -50,7 +50,8 @@ export default function Demo(canvasContext, input) {
 }
 
 Demo.prototype.load = function() {
-  this.entityService = new ecs.EntityService();
+  this.entityService = new EntityService();
+  window.entityService = this.entityService;
   this.entityService.registerComponent(Position);
   this.entityService.registerComponent(Velocity);
   this.entityService.registerComponent(Gravity);

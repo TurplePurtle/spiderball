@@ -12,7 +12,7 @@ export default class PlayerSpiderControlSystem {
 
   run(context) {
     const dt = context.dt;
-    const player = context.entityService.getComponentMap(Player).firstEntity();
+    const player = context.entityService.getComponentMap(Player)[0];
     const input = context.input;
     const pos = player.getComponent(Position);
     const vel = player.getComponent(Velocity);
