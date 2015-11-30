@@ -11,13 +11,15 @@ export default class PlatformSystem {
   run(context) {
     const platformEntities = context.entityService.getComponentMap(Platform);
     const standerEntities = context.entityService.getComponentMap(PlatformStander);
-    for (let standerEnt of standerEntities) {
+    for (let i = 0, len = standerEntities.length; i < len; i++) {
+      const standerEnt = standerEntities[i];
       const box = standerEnt.getComponent(CollisionBox);
       const pos = standerEnt.getComponent(Position);
       const vel = standerEnt.getComponent(Velocity);
       const stand = standerEnt.getComponent(PlatformStander);
       let grounded = false;
-      for (let platformEnt of platformEntities) {
+      for (let j = 0, len = platformEntities.length; j < len; j++) {
+        const platformEnt = platformEntities[j];
         const pBox = platformEnt.getComponent(CollisionBox);
         const pPos = platformEnt.getComponent(Position);
         const pVel = platformEnt.getComponent(Velocity);

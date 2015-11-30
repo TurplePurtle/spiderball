@@ -12,7 +12,8 @@ export default class SpiderWebSystem {
   run(context) {
     const dt = context.dt;
     const entities = context.entityService.getComponentMap(Web);
-    for (let entity of entities) {
+    for (let i = 0, len = entities.length; i < len; i++) {
+      const entity = entities[i];
       const spider = entity.getComponent(Spider);
       const pos = entity.getComponent(Position);
       if (spider.webbing) {
@@ -50,7 +51,8 @@ export default class SpiderWebSystem {
           web.t += dt;
 
           const platforms = context.entityService.getComponentMap(Platform);
-          for (let p of platforms) {
+          for (let j = 0, len = platforms.length; j < len; j++) {
+            const p = platforms[j];
             const pPos = p.getComponent(Position);
             const box = p.getComponent(CollisionBox);
             if (

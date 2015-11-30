@@ -8,7 +8,8 @@ export default class VelocitySystem {
   run(context) {
     const dt = context.dt;
     const entities = context.entityService.getComponentMap(Velocity);
-    for (let entity of entities) {
+    for (let i = 0, len = entities.length; i < len; i++) {
+      const entity = entities[i];
       const pos = entity.getComponent(Position);
       const v = entity.getComponent(Velocity);
       pos.x_ = pos.x;

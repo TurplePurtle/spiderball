@@ -11,7 +11,8 @@ export default class SpiderWebSystem {
     const entities = context.entityService.getComponentMap(Web);
     ctx.strokeStyle = "#fff";
     ctx.lineWidth = 2;
-    for (let entity of entities) {
+    for (let i = 0, len = entities.length; i < len; i++) {
+      const entity = entities[i];
       const spider = entity.getComponent(Spider);
       const pos = entity.getComponent(Position);
       if (spider.webbing) {

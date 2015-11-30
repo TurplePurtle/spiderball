@@ -8,7 +8,8 @@ export default class GravitySystem {
   run(context) {
     const dt = context.dt;
     const entities = context.entityService.getComponentMap(Gravity);
-    for (let entity of entities) {
+    for (let i = 0, len = entities.length; i < len; i++) {
+      const entity = entities[i];
       const v = entity.getComponent(Velocity);
       const g = entity.getComponent(Gravity);
       v.y += g.g * dt;
