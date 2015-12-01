@@ -2,18 +2,27 @@
 import initCanvas from "./lib/initCanvas";
 import input from "./input";
 import Demo from "./scenes/Demo";
+import allTexturesLoaded from "./textures";
 
 const { context } = initCanvas("#stage", "2d", 800, 600);
 input.addEventListeners();
 
-const scene = new Demo(context, input).load().start();
+allTexturesLoaded.then(textures => {
 
-const autoPause = e => {
-  if (document.hidden) {
-    scene.stop();
-  } else {
-    scene.start();
-  }
-};
+  const scene = new Demo({
+    canvasContext: context,
+    input,
+    textures,
+  }).load().start();
 
-window.addEventListener("visibilitychange", autoPause);
+  const autoPause = e => {
+    if (document.hidden) {
+      scene.stop();
+    } else {
+      scene.start();
+    }
+  };
+
+  window.addEventListener("visibilitychange", autoPause);
+
+});

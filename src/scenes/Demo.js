@@ -15,6 +15,7 @@ import Player from "../components/Player";
 import FallDeath from "../components/FallDeath";
 import Spider from "../components/Spider";
 import Web from "../components/Web";
+import Sprite from "../components/Sprite";
 // systems
 import PlayerSpiderControlSystem from "../systems/PlayerSpiderControlSystem";
 import GravitySystem from "../systems/GravitySystem";
@@ -24,10 +25,12 @@ import RenderBoxSystem from "../systems/RenderBoxSystem";
 import PlatformSystem from "../systems/PlatformSystem";
 import SpiderWebSystem from "../systems/SpiderWebSystem";
 import SpiderWebRenderSystem from "../systems/SpiderWebRenderSystem";
+import SpriteRenderSystem from "../systems/SpriteRenderSystem";
 
-export default function Demo(canvasContext, input) {
-  this.canvasContext = canvasContext;
-  this.input = input;
+export default function Demo(opts) {
+  this.canvasContext = opts.canvasContext;
+  this.input = opts.input;
+  this.textures = opts.textures;
   this.loop = new Loop(this.tick, { useRAF: true }, this);
   this.running = false;
   this.entityService = null;
@@ -37,8 +40,8 @@ export default function Demo(canvasContext, input) {
   this.updateSystems = [
     new PlayerSpiderControlSystem,
     new GravitySystem,
-    new SpiderWebSystem,
     new VelocitySystem,
+    new SpiderWebSystem,
     new PlatformSystem,
   ];
 
@@ -46,6 +49,7 @@ export default function Demo(canvasContext, input) {
     new ClearScreenSystem,
     new SpiderWebRenderSystem,
     new RenderBoxSystem,
+    new SpriteRenderSystem,
   ];
 }
 
@@ -62,19 +66,23 @@ Demo.prototype.load = function() {
   this.entityService.registerComponent(FallDeath);
   this.entityService.registerComponent(Spider);
   this.entityService.registerComponent(Web);
+  this.entityService.registerComponent(Sprite);
 
   const player = this.entityService.createEntity();
   player.setComponent(Position, assign(new Position, { x: 150, y: 250 }));
   player.setComponent(Velocity, assign(new Velocity, { x: 1000 }));
   player.setComponent(Gravity, new Gravity(300));
-  player.setComponent(CollisionBox, assign(new CollisionBox, { x: -10, y: -10, w: 20, h: 20 }));
-  player.setComponent(RenderBox, assign(new RenderBox, { x: -10, y: -10, w: 20, h: 20 }));
+  player.setComponent(CollisionBox, assign(new CollisionBox, { x: -8, y: -8, w: 16, h: 16 }));
+  // player.setComponent(RenderBox, assign(new RenderBox, { x: -8, y: -8, w: 16, h: 16 }));
   player.setComponent(PlatformStander, new PlatformStander);
   player.setComponent(Player, new Player);
   player.setComponent(FallDeath, new FallDeath(this.canvasContext.canvas.height));
   player.setComponent(Spider, new Spider);
   player.setComponent(Web, new Web);
+  player.setComponent(Sprite, new Sprite(this.textures.spider));
   this.player = player;
+
+  const platformPattern = this.canvasContext.createPattern(this.textures.platform.image, "repeat");
 
   [
     { x: 50, y: 400, vx: 50 },
@@ -89,12 +97,13 @@ Demo.prototype.load = function() {
     { x: 300, y: 200, w: 100 },
   ].forEach(props => {
     const w = props.w || 50;
-    const h = props.h || 6;
+    const h = props.h || 8;
     const pos = new Position();
     pos.x = props.x;
     pos.y = props.y;
     const collBox = new CollisionBox();
     const renBox = new RenderBox();
+    renBox.fillStyle = platformPattern;
     collBox.x = renBox.x = -w / 2;
     collBox.y = renBox.y = -h / 2;
     collBox.w = renBox.w = w;

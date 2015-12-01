@@ -22,8 +22,7 @@ export default class SpiderWebSystem {
 
         if (web.hit) {
           // swing physics
-
-          // normalized web vector
+          // position vector relative to web
           const dx = pos.x - web.x;
           const dy = pos.y - web.y;
           const length = web.hitLength;

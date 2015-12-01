@@ -33,7 +33,7 @@ export default class PlayerSpiderControlSystem {
     } else {
       // not swinging
 
-      const accel = grounded ? 2000 : 1000;
+      const accel = grounded ? 2000 : 1500;
       const drag = grounded ? 15 : 2;
       const runSpeed = axisX * 150;
 
