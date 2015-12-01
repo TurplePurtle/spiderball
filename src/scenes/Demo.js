@@ -51,7 +51,6 @@ export default function Demo(canvasContext, input) {
 
 Demo.prototype.load = function() {
   this.entityService = new EntityService();
-  window.entityService = this.entityService;
   this.entityService.registerComponent(Position);
   this.entityService.registerComponent(Velocity);
   this.entityService.registerComponent(Gravity);
